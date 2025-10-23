@@ -37,10 +37,8 @@ unsigned int get_n_bits(FILE *file, int number) {
   int c;
   while (num_read++ < number && (c = fgetc(file)) != EOF) {
     result <<= 1;
-    switch (c) {
-    case '1':
+    if (c == '1')
       result |= 1;
-    }
   }
   return result;
 }
