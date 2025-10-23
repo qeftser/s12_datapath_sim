@@ -1,12 +1,12 @@
 #include "parser.h"
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 
 void skip_whitespace(FILE *file) {
   int c;
   int exit = 0;
-  while (exit == 0 && (c = fgetc(file)) != EOF)  {
+  while (exit == 0 && (c = fgetc(file)) != EOF) {
     switch (c) {
     case ' ':
     case '\n':
@@ -20,9 +20,17 @@ void skip_whitespace(FILE *file) {
   fseek(file, -1, SEEK_CUR);
 }
 
+// this is used to skip the hex instruction indicator
+// they are alreyas sequential, and it is redundant to
+// parse them from the source file
+void skip_addr(FILE *file) {
+  skip_whitespace(file);
+  fseek(file, 2, SEEK_CUR);
+}
+
 // assumed endian
 unsigned int get_n_bits(FILE *file, int number) {
-	skip_whitespace(file);
+  skip_whitespace(file); // could move this to the loop if needed
 
   unsigned int result = 0;
   int num_read = 0;
@@ -37,20 +45,35 @@ unsigned int get_n_bits(FILE *file, int number) {
   return result;
 }
 
-unsigned char get_4_bits(FILE *file) { return get_n_bits(file, 4); }
-unsigned char get_8_bits(FILE *file) { return get_n_bits(file, 8); }
-unsigned int get_12_bits(FILE *file) { return get_n_bits(file, 12); }
+unsigned char next_4_bits(FILE *file) { return get_n_bits(file, 4); }
+unsigned char next_8_bits(FILE *file) { return get_n_bits(file, 8); }
+unsigned int next_12_bits(FILE *file) { return get_n_bits(file, 12); }
 
 Memory *parse_input_file(char *filename) {
   FILE *file = fopen(filename, "r");
+	// just assume that this works
   Memory *m = malloc(sizeof(Memory));
 
+	// does the input file exsist
   if (!file) {
     return m;
   }
 
-  printf("The first four are: %i followed by: %i\n", get_4_bits(file),
-         get_4_bits(file));
+	// update mem with header
+  m->instruction_pointer = next_8_bits(file);
+  m->accumulator = next_12_bits(file);
+
+  int line = 0;
+  while (line++ < 255) {
+    // read line
+    skip_addr(file);
+    OPCODE o = next_4_bits(file);
+    BYTE addr = next_8_bits(file);
+
+    // update mem
+    m->instructions[line].opcode = o;
+    m->instructions[line].address = addr;
+  }
 
   fclose(file);
 

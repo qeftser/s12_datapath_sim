@@ -1,13 +1,22 @@
 #ifndef __MEMORY__
 
+#define BYTE unsigned char
+#define OPCODE unsigned char
+#define ACCUMULATOR short
+
+typedef struct {
+  OPCODE opcode;
+  BYTE address;
+} MemorySlot;
+
 // This is all of the memory in the program
-// `short`s are not optimal here are they are 16 bits 
+// `short`s are not optimal here are they are 16 bits
 // and we only need 12, but the memory efficiency gain
 // comes at the cost of a lot more complexity for usage
 typedef struct {
-	unsigned char instructions[256];
-	unsigned char instruction_pointer;
-	short accumulator;
+  MemorySlot instructions[256];
+  BYTE instruction_pointer;
+  ACCUMULATOR accumulator;
 } Memory;
 
 #define __MEMORY__
