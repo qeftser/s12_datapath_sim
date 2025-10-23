@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int had_error = 0;
+
 void skip_whitespace(FILE *file) {
   int c;
   int exit = 0;
@@ -16,6 +18,9 @@ void skip_whitespace(FILE *file) {
       exit = 1;
     }
   }
+
+  if (c == EOF)
+    had_error = 1;
 
   fseek(file, -1, SEEK_CUR);
 }
@@ -40,6 +45,10 @@ unsigned int get_n_bits(FILE *file, int number) {
     if (c == '1')
       result |= 1;
   }
+
+  if (c == EOF)
+    had_error = 2;
+
   return result;
 }
 
@@ -62,7 +71,7 @@ Memory *parse_input_file(char *filename) {
   m->accumulator = next_12_bits(file);
 
   int line = 0;
-  while (line++ < 255) {
+  while (had_error == 0 && line++ < 255) {
     // read line
     skip_addr(file);
     OPCODE o = next_4_bits(file);
@@ -74,6 +83,9 @@ Memory *parse_input_file(char *filename) {
   }
 
   fclose(file);
+
+  if (had_error != 0)
+    printf("\n\nFAILED TO PARSE INPUT FILE: unexpected EOF\n\n");
 
   return m;
 }
