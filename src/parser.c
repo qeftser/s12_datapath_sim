@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 int had_error = 0;
+Memory memory;
 
 void skip_whitespace(FILE *file) {
   int c;
@@ -56,19 +57,17 @@ unsigned char next_4_bits(FILE *file) { return get_n_bits(file, 4); }
 unsigned char next_8_bits(FILE *file) { return get_n_bits(file, 8); }
 unsigned int next_12_bits(FILE *file) { return get_n_bits(file, 12); }
 
-Memory *parse_input_file(char *filename) {
+void parse_mem_file(char *filename) {
   FILE *file = fopen(filename, "r");
   // just assume that this works
-  Memory *m = malloc(sizeof(Memory));
-
   // does the input file exsist
   if (!file) {
-    return m;
+		return;
   }
 
   // update mem with header
-  m->instruction_pointer = next_8_bits(file);
-  m->accumulator = next_12_bits(file);
+  memory.instruction_pointer = next_8_bits(file);
+  memory.accumulator = next_12_bits(file);
 
   int line = 0;
   while (had_error == 0 && line++ < 255) {
@@ -78,14 +77,12 @@ Memory *parse_input_file(char *filename) {
     BYTE addr = next_8_bits(file);
 
     // update mem
-    m->instructions[line].opcode = o;
-    m->instructions[line].address = addr;
+    memory.instructions[line].opcode = o;
+    memory.instructions[line].address = addr;
   }
 
   fclose(file);
 
   if (had_error != 0)
     printf("\n\nFAILED TO PARSE INPUT FILE: unexpected EOF\n\n");
-
-  return m;
 }

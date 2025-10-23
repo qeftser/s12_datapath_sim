@@ -19,5 +19,7 @@ typedef struct {
   ACCUMULATOR accumulator;
 } Memory;
 
+extern Memory memory;
+
 #define __MEMORY__
 #endif
