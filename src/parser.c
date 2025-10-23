@@ -51,15 +51,15 @@ unsigned int next_12_bits(FILE *file) { return get_n_bits(file, 12); }
 
 Memory *parse_input_file(char *filename) {
   FILE *file = fopen(filename, "r");
-	// just assume that this works
+  // just assume that this works
   Memory *m = malloc(sizeof(Memory));
 
-	// does the input file exsist
+  // does the input file exsist
   if (!file) {
     return m;
   }
 
-	// update mem with header
+  // update mem with header
   m->instruction_pointer = next_8_bits(file);
   m->accumulator = next_12_bits(file);
 
