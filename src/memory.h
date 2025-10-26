@@ -9,6 +9,9 @@ typedef struct {
   BYTE address;
 } MemorySlot;
 
+#define memslot_to_accumulator(x) \
+   ((ACCUMULATOR)(((ACCUMULATOR)((x).opcode) << 8) | ((x).address)))
+
 // This is all of the memory in the program
 // `short`s are not optimal here are they are 16 bits
 // and we only need 12, but the memory efficiency gain
