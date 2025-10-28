@@ -3,9 +3,11 @@
 #include "memory.h"
 #include "latch.h"
 #include "parser.h"
+#include "control.h"
 
 /* give our externed variables a place to live */
 Memory memory;
+Control control;
 L1 l1;
 L2 l2;
 L3 l3;
@@ -20,6 +22,7 @@ int main(int argc, char **argv) {
 
    /* initialize the pipeline */
    memset(&memory,0,sizeof(Memory));
+   memset(&control,0,sizeof(Control));
    memset(&l1,0,sizeof(L1));
    memset(&l2,0,sizeof(L2));
    memset(&l3,0,sizeof(L3));
