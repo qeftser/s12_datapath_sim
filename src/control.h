@@ -22,7 +22,9 @@ typedef struct {
    unsigned char usage[256];
    unsigned char accumulator_usage;
    unsigned char instruction_pointer_usage;
+   unsigned char stall;
    unsigned char active[5];
+   unsigned char halt;
 } Control;
 
 /* clear out all values on the
@@ -35,13 +37,7 @@ void dump_pipeline(int stage);
 /* move the pipeline forward one 
  * step. Do all actions associated
  * with this task                 */
-void advance();
-
-/* dump a visual representation of the pipeline
- * to the screen - this will clear the screen
- * as well. Useful for debugging and also looks
- * kind of cool :).                             */
-void print_state();
+int advance();
 
 extern Control control;
 

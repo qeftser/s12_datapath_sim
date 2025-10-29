@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 int had_error = 0;
-Memory memory;
 
 void skip_whitespace(FILE *file) {
   int c;
@@ -70,7 +69,7 @@ void parse_mem_file(char *filename) {
   memory.accumulator = next_12_bits(file);
 
   int line = 0;
-  while (had_error == 0 && line++ < 255) {
+  while (had_error == 0 && line < 255) {
     // read line
     skip_addr(file);
     OPCODE o = next_4_bits(file);
@@ -79,6 +78,8 @@ void parse_mem_file(char *filename) {
     // update mem
     memory.instructions[line].opcode = o;
     memory.instructions[line].address = addr;
+
+    line += 1;
   }
 
   fclose(file);

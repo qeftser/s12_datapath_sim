@@ -1,0 +1,115 @@
+//==================================================================================================================================
+// GROUP MEMBERS: Daniel Uranga, Praba Arumugam, Shimoli Shinde, William Ostrum 
+// SECTION: ECE532 
+//
+// DESCRIPTION: 
+// Given a list of n numbers stored in addresses 0xFF-(n) to 0xFF -1, 
+// and the value n stored in 0xFF, sort the n numbers from smallest to largest. 
+// Store the final sorted list in address 0xFF-(n) to 0xFF -1
+// with smallest value om 0xFF-(n) to 0xFF-1
+// Note: n<=15
+// This code uses bubble sort algorithm for sorting and is optimized for time
+//
+// USAGE:
+// 1. Specify size 'n' of list to be sorted at address: 0xFF
+//    Note: size 'n' <= 15
+// 2. Specify the list of numbers at address: 0xFF-(n) to 0xFF-(1)
+// 3. Additionally, following values must be set in memory as they will be used as loop counters, flags, etc.
+//  0xE6 : 1 (Store 1 value for immediate load)
+//  0xEA : 0xFE (Start address of data)
+//  0xEB : 0 (Store zero value for immediate load)
+//  0xED : 0 (Swapped Flag; Initial value=0)
+//  0xEE : 0xFE (j: Inner Loop Counter; Initial value = 0xFE)
+//  0xEF : 0 (i: Outer Loop counter; Initial value = 0)
+//
+// OUTPUT:
+// Sorted list at 0xFF-(n) to 0xFF-(1) with smallest number at 0xFF-(1) and largest at 0xFF-(n)
+//
+// EVALUATION METRICS:
+// Total temporary variables: ~10
+// Total instructions: 
+//  Best case (Input data sorted from smallest to largest): (15n - 5) instructions
+//  Worst case (Input data sorted largest to smallest): (12n^2) instructions 
+//
+// PSUEDO-CODE:
+//    for (i=0 ; i<n ; i++) {
+//        swp = 0;
+//        for (j=0xFE; j>0xFE-n-i; j--){
+//            if (a[j] > a[j-1]){     //Swap
+//                tmp = a[j];
+//                a[j] = a[j-1];
+//                a[j-1] = tmp;
+//                swp = 1;
+//            } 
+//        }
+//        if (!swp) {     //All swapped, exit early
+//            break;
+//        }
+//    }
+// 
+// MEMORY MAP FOR VARIABLES:
+// 0xE6 : 1 (Store 1 value for immediate load)
+// 0xE7 : a[j-1]
+// 0xE8 : j-1
+// 0xE9 : 0xFE-n-i (Exit condition for inner loop)
+// 0xEA : 0xFE (Start address of data)
+// 0xEB : 0 (Store zero value for immediate load)
+// 0xEC : tmp (variable used to store temporary value during swap operation)
+// 0xED : swp (Swapped Flag; Initial value=0)
+// 0xEE : j (j: Inner Loop Counter; Initial value = 0xFE)
+// 0xEF : i (i: Outer Loop counter; Initial value = 0)
+// 0xF0 to 0xFE : Input Data list
+// 0xFF : n (Size of list)
+
+//==================================================================================================================================
+
+//Outer Loop
+OUTER_LOOP_START: 
+    LOAD 0xFF   //A=n
+    SUB 0xEF    //A=n-i ; if n<i => negative flag set then exit
+    JN EXIT     //if negative flag set, exit
+    LOAD 0xEB   //A=0
+    STORE 0xED  //Reset swap flag (swp = 0)
+    LOAD 0xEA   //A=0xFE
+    SUB 0xFF    //A=0xFE-n
+    SUB 0xEF    //A=0xFE-n-i (Calculate exit condition for inner loop)
+    STORE 0xE9  //Store exit condition for inner loop
+//Inner Loop
+INNER_LOOP_START:
+    LOAD 0xEE   //A=j
+    SUB 0xE9    //A=j-(0xFE-n-i) ; If (0xFE-n-i)>j => negative flag is set then exit inner loop
+    JN EXIT_INNER_LOOP  //If negative flag, exit inner loop
+    LOAD 0xEE   //A=j
+    SUB 0xE6    //A=j-1
+    STORE 0xE8  //Store j-1
+    LOADI 0xE8  //A=a[j-1]
+    STORE 0xE7  //Store a[j-1]
+    LOADI 0xEE  //A=a[j]
+    SUB 0xE7    //A=a[j] - a[j-1] ; If a[j] < a[j-1] (Negative Flag Set); do not swap and decrement inner loop counter else swap
+    JN INNER_LOOP_DCR
+    LOADI 0xEE  //A=a[j]
+    STORE 0xEC  //tmp=a[j]
+    LOAD 0xE7   //A=a[j-1]
+    STOREI 0xEE //a[j] = a[j-1]
+    LOAD 0xEC   //A=tmp
+    STOREI 0xE8 //a[j-1] = tmp 
+    LOAD 0xE6   //A=1
+    STORE 0xED  //Swapp flag = 1
+//Decrement inner loop counter
+INNER_LOOP_DCR:
+    LOAD 0xEE   //A=j
+    SUB 0xE6    //A=j-1
+    STORE 0xEE  
+    JMP INNER_LOOP_START    //Go to start of inner loop
+//Exit inner loop
+EXIT_INNER_LOOP:
+    LOAD 0xED   //A=swp (Swap flag)
+    OR 0xEB    //A=swp||0 ; If (A=swp||0 = 0) (implies swap flag is zero)  then nothing swapped, HALT else increment outer loop counter
+    JZ EXIT
+//Increment counter for inner loop
+    LOAD 0xEF   //A=i 
+    ADD 0xE6    //A=i+1
+    STORE 0xEF  //Store changed value of i
+//Halt Program
+EXIT:
+    HALT

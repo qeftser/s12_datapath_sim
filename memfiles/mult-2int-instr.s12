@@ -1,0 +1,54 @@
+// Multiply_2Int (time optimized)
+// 
+// Multiply two unsigned 8-bit integers stored at 0xFD (multiplicand) and
+// 0xFE (multiplier). Store the low 8 bits of the product at 0xFF.
+//
+// Usage: Write A to [FD] and B to [FE]. Run. When HALT executes, [FF] = (A*B) mod 256.
+//
+// Author: James Stringham, Computer Architecture Section 001
+
+START:  LOAD FD          // A ← M[FD] (multiplicand)
+        STORE F0         // F0 ← multiplicand
+
+        LOAD FE          // A ← M[FE] (multiplier)
+        STORE F3         // F3 ← multiplier (kept constant)
+
+        LOADI 00         // A ← 0
+        STORE FF         // result ← 0
+
+        LOADI 01         // A ← 1
+        STORE F1         // mask ← 1  (tests bit0 first)
+
+        LOADI 08         // A ← 8
+        STORE F2         // counter ← 8 iterations (one per bit)
+
+        LOADI 01         // A ← 1
+        STORE F4         // F4 holds the constant 1 for SUB
+
+// Main loop: 8 passes for 8 bits
+LOOP:   LOAD F3          // A ← multiplier
+        AND  F1          // A ← multiplier & mask
+        JZ   SKIP_ADD    // if that bit is 0, skip accumulation
+
+        LOAD FF          // A ← result
+        ADD  F0          // A ← result + multiplicand (current partial)
+        STORE FF         // result ← A
+
+SKIP_ADD:
+        // Advance to next bit by doubling multiplicand and mask
+        LOAD F0          // A ← multiplicand
+        ADD  F0          // A ← multiplicand * 2
+        STORE F0         // multiplicand ← multiplicand << 1 (via add)
+
+        LOAD F1          // A ← mask
+        ADD  F1          // A ← mask * 2
+        STORE F1         // mask ← mask << 1
+
+        // Decrement counter and loop if not zero
+        LOAD F2          // A ← counter
+        SUB  F4          // A ← counter - 1
+        STORE F2         // counter ← A
+        JZ   DONE        // if counter == 0, exit
+        JMP  LOOP
+
+DONE:   HALT             // product low byte now in [FF]

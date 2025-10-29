@@ -1,0 +1,44 @@
+// MaxFinder (Simple12) — SPACE-OPTIMIZED
+// Authors: Joseph Myers (ECE 432), Dustin Kirkpatrick (CSE 432), Brodie Abrew (CS 441), Section 001
+// Purpose: Given n at mem[FF] and elements at mem[FF-n]..mem[FF-1],
+//          write max(array) to mem[FF-(n+1)].
+// How to run:
+//   - In memFile: set mem[FF]=n; place n elements at FF-n..FF-1
+//   - Preload constants/scratch (addresses below) as noted.
+//   - Start PC at 00. On HALT, result is at FF-(n+1).
+//
+// Scratch / constants (choose these free addresses):
+//   11=ONE=01, 12=BASEFE=0FE, 00=PTR, 01=END 
+//              12=MAX
+//
+//   (Addresses 11 and 12 must be preloaded in the memFile)
+//
+
+00  LOAD    12          // A := FE
+01  STORE   00          // PTR := FE   (last element)
+02  SUB     FF          // A := FE - n 
+03  STORE   01          // END := FE - n the address in memory after the last number we compare
+
+// Start Loop
+04  LOADI   00          // A := M[PTR]     (seed MAX with last element)
+05  STORE   12          // MAX := A
+06  STOREI  01          // M[END] := MAX
+
+07  LOAD    00          // A := PTR
+08  SUB     11          // A := PTR - 1
+09  STORE   00          // PTR := A    (move to previous element)
+
+0A  SUB     01          // A := PTR - END
+0B  JZ      10          // if PTR == END → done
+
+0C  LOADI   00          // A := x = M[PTR]
+0D  SUB     12          // A := x - MAX
+0E  JN      07          // if x < MAX → skip update
+0F  JMP     04          // loop
+// End Loop
+
+// DONE:
+10  HALT
+
+11  1                  // Constant value of 1
+12  FE                 // Constant value of FE until the MAX value is placed here

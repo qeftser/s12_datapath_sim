@@ -4,6 +4,7 @@
 #include "latch.h"
 #include "parser.h"
 #include "control.h"
+#include "visual.h"
 
 /* give our externed variables a place to live */
 Memory memory;
@@ -38,6 +39,19 @@ int main(int argc, char **argv) {
 	int current = 0;
 	printf("The first %i instructions are:\n", num_instructions);
 	while (current++ < num_instructions) {
-		printf("%i | %i\n", memory.instructions[current].opcode, memory.instructions[current].address);
+		printf("%i | %i\n",
+             memory.instructions[current].opcode,
+             memory.instructions[current].address);
 	}
+
+
+   do {
+      print_state();
+
+      /* pause until user types enter.. */
+      fprintf(stderr,"(enter to advance)..");
+      getchar();
+   } while (!advance());
+   
+
 }

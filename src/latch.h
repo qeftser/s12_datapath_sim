@@ -9,21 +9,25 @@
  * stage.                                       */
 
 typedef struct {
+   BYTE instruction_pos;
    MemorySlot value;
 } L1;
 
 typedef struct {
+   BYTE instruction_pos;
    OPCODE instruction;
    BYTE address;
 } L2;
 
 typedef struct {
+   BYTE instruction_pos;
    OPCODE instruction;
    BYTE address;
    MemorySlot read;
 } L3;
 
 typedef struct {
+   BYTE instruction_pos;
    unsigned int zero_flag:1;
    unsigned int negative_flag:1;
    OPCODE instruction;

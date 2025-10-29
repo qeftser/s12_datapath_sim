@@ -19,6 +19,7 @@ typedef struct {
 typedef struct {
   MemorySlot instructions[256];
   BYTE instruction_pointer;
+  BYTE prev_instruction_pointer;
   ACCUMULATOR accumulator;
 } Memory;
 

@@ -3,19 +3,23 @@
 #include "memory.h"
 #include "latch.h"
 #include "isa.h"
+#include "control.h"
 
 void l1_read() {
-   l1.value = memory.instructions[memory.instruction_pointer];
+   l1.value = memory.instructions[memory.prev_instruction_pointer];
+   l1.instruction_pos = memory.prev_instruction_pointer;
 }
 
 void l2_decode() {
    l2.instruction = l1.value.opcode;
    l2.address = l1.value.address;
+   l2.instruction_pos = l1.instruction_pos;
 }
 
 void l3_forward() {
    l3.instruction = l2.instruction;
    l3.address = l2.address;
+   l3.instruction_pos = l2.instruction_pos;
 }
 
 void l3_read() {
@@ -26,6 +30,7 @@ void l4_forward() {
    l4.instruction = l3.instruction;
    l4.address = l3.address;
    l4.read = l3.read;
+   l4.instruction_pos = l3.instruction_pos;
 }
 
 void l4_flags() {
@@ -48,22 +53,37 @@ static ACCUMULATOR adhere_12bit(ACCUMULATOR value) {
 
 void l4_alu() {
    ACCUMULATOR rhs = memslot_to_accumulator(l3.read);
+   ACCUMULATOR lhs;
+
+   /* forwarding on the ALU result */
+   switch (l4.instruction) {
+      case OP_AND:
+      case OP_OR:
+      case OP_ADD:
+      case OP_SUB:
+         lhs = l4.alu_res;
+         break;
+      default:
+         lhs = memory.accumulator;
+         break;
+   }
+
    switch (l3.instruction) {
       case OP_AND:
-         l4.alu_res = memory.accumulator & rhs;
+         l4.alu_res = lhs & rhs;
          break;
       case OP_OR:
-         l4.alu_res = memory.accumulator | rhs;
+         l4.alu_res = lhs | rhs;
          break;
       case OP_ADD:
          {
-            ACCUMULATOR interm = memory.accumulator + rhs;
+            ACCUMULATOR interm = lhs + rhs;
             l4.alu_res = adhere_12bit(interm);
          }
          break;
       case OP_SUB:
          {
-            ACCUMULATOR interm = memory.accumulator - rhs;
+            ACCUMULATOR interm = lhs - rhs;
             l4.alu_res = adhere_12bit(interm);
          }
          break;
@@ -101,20 +121,32 @@ void l4_mem() {
 }
 
 void l5_writeback() {
+   memory.prev_instruction_pointer 
+      = memory.instruction_pointer;
    switch (l4.instruction) {
       case OP_JMP:
-         memory.instruction_pointer = l4.address;
+         memory.instruction_pointer = l4.address + 1;
+         memory.prev_instruction_pointer = l4.address;
          break;
       case OP_JN:
-         if (l4.negative_flag)
-            memory.instruction_pointer = l4.address;
+         if (l4.negative_flag) {
+            memory.instruction_pointer = l4.address + 1;
+            memory.prev_instruction_pointer = l4.address;
+         }
+         else
+            memory.instruction_pointer += 1;
          break;
       case OP_JZ:
-         if (l4.zero_flag)
-            memory.instruction_pointer = l4.address;
+         if (l4.zero_flag) {
+            memory.instruction_pointer = l4.address + 1;
+            memory.prev_instruction_pointer = l4.address;
+         }
+         else
+            memory.instruction_pointer += 1;
          break;
       default:
-         memory.instruction_pointer += 1;
+         if (!control.instruction_pointer_usage && !control.stall)
+            memory.instruction_pointer += 1;
          break;
    }
 
@@ -138,5 +170,7 @@ void l5_writeback() {
 
 void l5_pc_inc() {
    /* kinda sad... */
+   memory.prev_instruction_pointer 
+      = memory.instruction_pointer;
    memory.instruction_pointer += 1;
 }
