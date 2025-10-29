@@ -14,7 +14,6 @@ typedef enum {
    USE_READ_1 = 1,
    USE_READ_2 = 2,
    USE_READ_3 = 3,
-   USE_READ_4 = 4,
    USE_WRITE  = 255,
 } usage_mark;
 

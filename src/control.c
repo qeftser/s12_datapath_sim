@@ -11,25 +11,46 @@ void dump_pipeline(int stage) {
       return; /* xD */
 
    if (stage > 3) {
-      control.usage[l4.instruction_pos] = USE_NO;
+      control.usage[l4.instruction_pos] &= ~USE_READ_1;
+      switch (l4.instruction) {
+         case OP_LOAD:
+         case OP_LOADI:
+         case OP_STOREI:
+         case OP_ADD: case OP_SUB:
+         case OP_AND: case OP_OR:
+            control.usage[l4.address] &= ~USE_READ_2;
+            break;
+      }
       memset(&l4,0,sizeof(L4));
       memory.instruction_pointer -= 1;
       control.active[3] = 0;
    }
    if (stage > 2) {
-      control.usage[l3.instruction_pos] = USE_NO;
+      control.usage[l3.instruction_pos] &= ~USE_READ_1;
+      switch (l3.instruction) {
+         case OP_LOAD:
+         case OP_LOADI:
+         case OP_STOREI:
+         case OP_ADD: case OP_SUB:
+         case OP_AND: case OP_OR:
+            control.usage[l3.address] &= ~USE_READ_2;
+            break;
+         case OP_STORE:
+            control.usage[l3.address] = USE_NO;
+            break;
+      }
       memset(&l3,0,sizeof(L3));
       memory.instruction_pointer -= 1;
       control.active[2] = 0;
    }
    if (stage > 1) {
-      control.usage[l2.instruction_pos] = USE_NO;
+      control.usage[l2.instruction_pos] &= ~USE_READ_1;
       memset(&l2,0,sizeof(L2));
       memory.instruction_pointer -= 1;
       control.active[1] = 0;
    }
    if (stage > 0) {
-      control.usage[l1.instruction_pos] = USE_NO;
+      control.usage[l1.instruction_pos] &= ~USE_READ_1;
       memset(&l1,0,sizeof(L1));
       memory.instruction_pointer -= 2;
       control.active[0] = 0;
@@ -60,7 +81,7 @@ static int l5_advance() {
       }
    }
 
-   control.usage[l4.instruction_pos] = USE_NO;
+   control.usage[l4.instruction_pos] &= ~USE_READ_1;
 
    switch (l4.instruction) {
       case OP_LOAD:
@@ -68,9 +89,7 @@ static int l5_advance() {
       case OP_STOREI:
       case OP_ADD: case OP_SUB:
       case OP_OR:  case OP_AND:
-         /* could be overridden by a use_read_1 */
-         if (control.usage[l4.address] == USE_READ_2)
-            control.usage[l4.address] = USE_NO;
+         control.usage[l4.address] &= ~USE_READ_2;
          break;
       case OP_STORE:
          control.usage[l4.address] = USE_NO;
@@ -122,6 +141,7 @@ static int l4_advance() {
                l4_mem();
                break;
             case USE_READ_2:
+            case USE_READ_3:
             case USE_WRITE:
                to_dump = 3;
                l4_mem();
@@ -159,8 +179,7 @@ static int l3_advance() {
       case OP_OR:  case OP_AND:
          if (control.usage[l2.address] == USE_WRITE)
             return 0;
-         if (control.usage[l2.address] == USE_NO)
-            control.usage[l2.address] = USE_READ_2;
+         control.usage[l2.address] |= USE_READ_2;
          l3_read();
          break;
       case OP_STORE:
@@ -205,7 +224,7 @@ static int l1_advance() {
    }
 
    l1_read();
-   control.usage[memory.prev_instruction_pointer] = USE_READ_1;
+   control.usage[memory.prev_instruction_pointer] |= USE_READ_1;
    control.active[0] = 1;
 
    return 1;

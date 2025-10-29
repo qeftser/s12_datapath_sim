@@ -88,6 +88,9 @@ void print_state() {
             case USE_READ_2:
                printf("\033[33mR");
                break;
+            case USE_READ_3:
+               printf("\033[36mY");
+               break;
             default:
                printf("_");
                break;
