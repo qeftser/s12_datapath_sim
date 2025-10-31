@@ -50,12 +50,6 @@ int main(int argc, char **argv) {
    printf("loading file %s...\n",argv[fpos]);
    parse_mem_file(argv[fpos]);
 
-   char buf[1024];
-   strcpy(buf,argv[fpos]);
-   strcat(buf,".trace");
-   printf("saving trace to %s...\n",buf);
-   start_trace(buf);
-
    if (debug) {
       printf("The instruction pointer is: %i\n", memory.instruction_pointer);
       printf("The accumulator is: %i\n", memory.accumulator);
@@ -82,10 +76,17 @@ int main(int argc, char **argv) {
       } while (!advance());
    }
    else {
+      char buf[1024];
+      strcpy(buf,argv[fpos]);
+      strcat(buf,".trace");
+      printf("saving trace to %s...\n",buf);
+      start_trace(buf);
+
       while (!advance());
+
+      end_trace();
    }
    
-   end_trace();
    print_statistics();
 
    return 0;

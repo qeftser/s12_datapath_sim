@@ -11,6 +11,8 @@ void start_trace(char * fname) {
 }
 
 void end_trace() {
+   if (!tracer.live)
+      return;
 
    fclose(tracer.fhandle);
    tracer.live = 0;

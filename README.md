@@ -30,6 +30,7 @@ can be passed as follows:
 ```
 ./build/interpreter memfiles/<FILE NAME> -d
 ``` 
+A trace is not produced in debug mode.
 
 ## Statistics
 
