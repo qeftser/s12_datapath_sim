@@ -9,4 +9,7 @@
  * kind of cool :).                             */
 void print_state();
 
+/* string versions of the instructions */
+extern char * isa_names[];
+
 #endif

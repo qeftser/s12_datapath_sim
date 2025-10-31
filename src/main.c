@@ -6,11 +6,13 @@
 #include "control.h"
 #include "visual.h"
 #include "stat.h"
+#include "trace.h"
 
 /* give our externed variables a place to live */
 Memory memory;
 Control control;
 Statistics stats;
+Tracer tracer;
 L1 l1;
 L2 l2;
 L3 l3;
@@ -37,6 +39,8 @@ int main(int argc, char **argv) {
    /* initialize the pipeline */
    memset(&memory,0,sizeof(Memory));
    memset(&control,0,sizeof(Control));
+   memset(&tracer,0,sizeof(Tracer));
+   memset(&stats,0,sizeof(Statistics));
    memset(&l1,0,sizeof(L1));
    memset(&l2,0,sizeof(L2));
    memset(&l3,0,sizeof(L3));
@@ -45,6 +49,12 @@ int main(int argc, char **argv) {
    /* get the user data */
    printf("loading file %s...\n",argv[fpos]);
    parse_mem_file(argv[fpos]);
+
+   char buf[1024];
+   strcpy(buf,argv[fpos]);
+   strcat(buf,".trace");
+   printf("saving trace to %s...\n",buf);
+   start_trace(buf);
 
    if (debug) {
       printf("The instruction pointer is: %i\n", memory.instruction_pointer);
@@ -75,6 +85,7 @@ int main(int argc, char **argv) {
       while (!advance());
    }
    
+   end_trace();
    print_statistics();
 
    return 0;

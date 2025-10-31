@@ -1,0 +1,40 @@
+loading file memfiles/sum_instr.txt...
+saving trace to memfiles/sum_instr.txt.trace...
+
+=========== RUN STATISTICS ===========
+Total instructions executed: 27
+Instruction mix:
+	JMP:	3	(11.11%)
+	JN:	0	(0.00%)
+	JZ:	4	(14.81%)
+	LOAD:	7	(25.93%)
+	STORE:	6	(22.22%)
+	LOADI:	0	(0.00%)
+	STOREI:	0	(0.00%)
+	AND:	0	(0.00%)
+	OR:	0	(0.00%)
+	ADD:	6	(22.22%)
+	SUB:	0	(0.00%)
+	HALT:	1	(3.70%)
+
+Cycles: 55
+Cycles per instruction: 2.04
+Forwards: 9
+	Cycles without forwarding: 64
+	CPI without forwarding: 2.37
+Stalls: 19
+Dumps: 8
+	Stage 1 Dumps: 0
+	Stage 2 Dumps: 8
+	Stage 3 Dumps: 0
+	Stage 4 Dumps: 0
+Average pipeline fill: 57.27%
+	Average Stage 1 Fill: 70.91%
+	Average Stage 2 Fill: 56.36%
+	Average Stage 3 Fill: 50.91%
+	Average Stage 4 Fill: 50.91%
+Cycles without pipelining: 135
+CPI without pipelining: 5
+Cycles saved from pipelining: 80
+CPI increase from pipelining: 2.96
+======================================

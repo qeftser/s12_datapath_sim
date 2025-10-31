@@ -1,0 +1,40 @@
+loading file memfiles/mult-2int-instr.mem...
+saving trace to memfiles/mult-2int-instr.mem.trace...
+
+=========== RUN STATISTICS ===========
+Total instructions executed: 84
+Instruction mix:
+	JMP:	4	(4.76%)
+	JN:	0	(0.00%)
+	JZ:	9	(10.71%)
+	LOAD:	23	(27.38%)
+	STORE:	22	(26.19%)
+	LOADI:	4	(4.76%)
+	STOREI:	0	(0.00%)
+	AND:	5	(5.95%)
+	OR:	0	(0.00%)
+	ADD:	12	(14.29%)
+	SUB:	4	(4.76%)
+	HALT:	1	(1.19%)
+
+Cycles: 127
+Cycles per instruction: 1.51
+Forwards: 43
+	Cycles without forwarding: 170
+	CPI without forwarding: 2.02
+Stalls: 28
+Dumps: 14
+	Stage 1 Dumps: 0
+	Stage 2 Dumps: 14
+	Stage 3 Dumps: 0
+	Stage 4 Dumps: 0
+Average pipeline fill: 69.69%
+	Average Stage 1 Fill: 77.95%
+	Average Stage 2 Fill: 66.93%
+	Average Stage 3 Fill: 66.93%
+	Average Stage 4 Fill: 66.93%
+Cycles without pipelining: 420
+CPI without pipelining: 5
+Cycles saved from pipelining: 293
+CPI increase from pipelining: 3.49
+======================================

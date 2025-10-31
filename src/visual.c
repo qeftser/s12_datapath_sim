@@ -5,7 +5,7 @@
 #include "isa.h"
 #include <stdio.h>
 
-static char * isa_names[] = {
+char * isa_names[] = {
    [OP_JMP]    = "JMP",
    [OP_JN]     = "JN",
    [OP_JZ]     = "JZ",

@@ -8,7 +8,7 @@
 // via the following loop:
 // int factorial = 0
 // for (int i = 0; i < output_int_size; ++i) {
-//    factorial *= 4096;
+//    factorial *= 2047;
 //    factorial += sum[i];
 // }
 // For large numbers some kind of bignum arithmetic must be used

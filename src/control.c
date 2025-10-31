@@ -6,6 +6,7 @@
 #include "logic.h"
 #include "isa.h"
 #include "stat.h"
+#include "trace.h"
 
 void dump_pipeline(int stage) {
    if (stage > 4 || stage < 1)
@@ -246,6 +247,7 @@ int advance() {
    if (control.active[3]) {
       stats.executed += 1;
       stats.instruction[l4.instruction] += 1;
+      add_trace(l4.instruction,l4.address);
    }
 
    res = l5_advance();

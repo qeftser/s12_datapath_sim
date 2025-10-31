@@ -1,0 +1,40 @@
+loading file memfiles/fact.txt...
+saving trace to memfiles/fact.txt.trace...
+
+=========== RUN STATISTICS ===========
+Total instructions executed: 5066
+Instruction mix:
+	JMP:	385	(7.60%)
+	JN:	76	(1.50%)
+	JZ:	350	(6.91%)
+	LOAD:	1213	(23.94%)
+	STORE:	1177	(23.23%)
+	LOADI:	365	(7.20%)
+	STOREI:	352	(6.95%)
+	AND:	0	(0.00%)
+	OR:	0	(0.00%)
+	ADD:	750	(14.80%)
+	SUB:	397	(7.84%)
+	HALT:	1	(0.02%)
+
+Cycles: 7503
+Cycles per instruction: 1.48
+Forwards: 2299
+	Cycles without forwarding: 9802
+	CPI without forwarding: 1.93
+Stalls: 1624
+Dumps: 812
+	Stage 1 Dumps: 0
+	Stage 2 Dumps: 812
+	Stage 3 Dumps: 0
+	Stage 4 Dumps: 0
+Average pipeline fill: 70.24%
+	Average Stage 1 Fill: 78.36%
+	Average Stage 2 Fill: 67.53%
+	Average Stage 3 Fill: 67.53%
+	Average Stage 4 Fill: 67.52%
+Cycles without pipelining: 25330
+CPI without pipelining: 5
+Cycles saved from pipelining: 17827
+CPI increase from pipelining: 3.52
+======================================
