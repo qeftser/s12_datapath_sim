@@ -3,12 +3,8 @@
 // the datapath interpreter is functioning
 // correctly, covers RAW, WAR, and WAW hazards,
 // as well as forwarding in the ALU
-//
-// At the end of the run, the value in A7 should
-// be equal to 16(0x10) and the value in A9 should
-// be equal to 21(0x16).
-LOAD   0xAF
-ADD    0xAE
+LOAD   0xAF  
+ADD    0xAE // ALU operations in sequence
 ADD    0xAD
 ADD    0xAC
 ADD    0xAB
@@ -18,16 +14,16 @@ AND    0xA8 // clear things out
 AND    0xA8
 AND    0xA8
 AND    0xA8
-JZ     0x11
+JZ     0x11 // branch hazard
 OR     0xA8
 OR     0xA8
 OR     0xA8
 OR     0xA8
-JMP    0x26
-LOAD   0xA7
-ADD    0xAF
+JMP    0x2b 
+LOAD   0xA7 // series of load and stores
+ADD    0xAF // to the same address
 STORE  0xA7
-LOAD   0xA7
+LOAD   0xA7 
 ADD    0xAF
 STORE  0xA7
 ADD    0xAF
@@ -44,6 +40,11 @@ ADD    0xA7
 STORE  0xA7
 ADD    0xA7
 STOREI 0xA6
+STORE  0x25 // write to ourselves
+STORE  0x25 // write to the guy behind us
+LOAD   0x27 // load our own address
+STORE  0x29 // write to the next address
+LOAD   0x27 // prior read dependency
 JMP    0x0C 
 HALT
 0xA6: 167

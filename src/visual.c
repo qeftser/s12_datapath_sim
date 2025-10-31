@@ -27,7 +27,7 @@ void print_state() {
 
    printf("Control:\n");
    printf("\tactive: ");
-   for (int i = 0; i < 5; ++i)
+   for (int i = 0; i < 4; ++i)
       printf("%d ",control.active[i]);
    printf("\n");
    printf("\tIP usage: %d\n\n",control.instruction_pointer_usage);

@@ -5,10 +5,13 @@
 #include "latch.h"
 #include "logic.h"
 #include "isa.h"
+#include "stat.h"
 
 void dump_pipeline(int stage) {
-   if (stage > 4 || stage < 0)
+   if (stage > 4 || stage < 1)
       return; /* xD */
+
+   stats.dumps[stage] += 1;
 
    if (stage > 3) {
       control.usage[l4.instruction_pos] &= ~USE_READ_1;
@@ -183,7 +186,12 @@ static int l3_advance() {
          l3_read();
          break;
       case OP_STORE:
-         if (control.usage[l2.address] != USE_NO)
+         if (l1.instruction_pos == l2.address) {
+            dump_pipeline(1);
+            memory.prev_instruction_pointer += 1;
+         }
+         if (control.usage[l2.address] != USE_NO &&
+             l2.address != l2.instruction_pos)
             return 0;
          control.usage[l2.address] = USE_WRITE;
          break;
@@ -233,6 +241,13 @@ static int l1_advance() {
 int advance() {
    int res;
 
+   stats.cycles += 1;
+
+   if (control.active[3]) {
+      stats.executed += 1;
+      stats.instruction[l4.instruction] += 1;
+   }
+
    res = l5_advance();
 
    if (res)
@@ -254,6 +269,18 @@ int advance() {
 
    if (res)
       res = l1_advance();
+
+   if (!res)
+      stats.stalls += 1;
+
+   if (control.active[0])
+      stats.live[0] += 1;
+   if (control.active[1])
+      stats.live[1] += 1;
+   if (control.active[2])
+      stats.live[2] += 1;
+   if (control.active[3])
+      stats.live[3] += 1;
 
    return control.halt;
 }

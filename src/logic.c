@@ -4,6 +4,7 @@
 #include "latch.h"
 #include "isa.h"
 #include "control.h"
+#include "stat.h"
 
 void l1_read() {
    l1.value = memory.instructions[memory.prev_instruction_pointer];
@@ -56,6 +57,7 @@ void l4_alu() {
    ACCUMULATOR lhs;
 
    /* forwarding on the ALU result */
+   stats.forwards += 1;
    switch (l4.instruction) {
       case OP_AND:
       case OP_OR:
@@ -63,8 +65,15 @@ void l4_alu() {
       case OP_SUB:
          lhs = l4.alu_res;
          break;
+      case OP_LOAD:
+         lhs = memslot_to_accumulator(l4.read);
+         break;
+      case OP_LOADI:
+         lhs = memslot_to_accumulator(l4.read2);
+         break;
       default:
          lhs = memory.accumulator;
+         stats.forwards -= 1;
          break;
    }
 
@@ -95,10 +104,29 @@ void l4_alu() {
 void l4_mem() {
    switch (l3.instruction) {
       case OP_STORE:
-         memory.instructions[l3.address].opcode 
-            = (memory.accumulator >> 8);
-         memory.instructions[l3.address].address 
-            = (memory.accumulator & 0xff);
+         {
+            ACCUMULATOR value = memory.accumulator;
+            stats.forwards += 1;
+            switch (l4.instruction) {
+               case OP_ADD: case OP_SUB:
+               case OP_AND: case OP_OR:
+                  value = l4.alu_res;
+                  break;
+               case OP_LOAD:
+                  value = memslot_to_accumulator(l4.read);
+                  break;
+               case OP_LOADI:
+                  value = memslot_to_accumulator(l4.read2);
+                  break;
+               default:
+                  stats.forwards -= 1;
+                  break;
+            }
+            memory.instructions[l3.address].opcode 
+               = (value >> 8);
+            memory.instructions[l3.address].address 
+               = (value & 0xff);
+         }
          break;
       case OP_LOADI:
          {
@@ -109,10 +137,27 @@ void l4_mem() {
       case OP_STOREI:
          {
             ACCUMULATOR target = memslot_to_accumulator(l3.read);
+            ACCUMULATOR value = memory.accumulator;
+            stats.forwards += 1;
+            switch (l4.instruction) {
+               case OP_ADD: case OP_SUB:
+               case OP_AND: case OP_OR:
+                  value = l4.alu_res;
+                  break;
+               case OP_LOAD:
+                  value = memslot_to_accumulator(l4.read);
+                  break;
+               case OP_LOADI:
+                  value = memslot_to_accumulator(l4.read2);
+                  break;
+               default:
+                  stats.forwards -= 1;
+                  break;
+            }
             memory.instructions[target&0xff].opcode 
-               = (memory.accumulator >> 8);
+               = (value >> 8);
             memory.instructions[target&0xff].address
-               = (memory.accumulator & 0xff);
+               = (value & 0xff);
          }
          break;
       default:
