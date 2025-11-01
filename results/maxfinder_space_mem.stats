@@ -2,39 +2,40 @@ loading file memfiles/maxfinder_space_mem...
 saving trace to memfiles/maxfinder_space_mem.trace...
 
 =========== RUN STATISTICS ===========
-Total instructions executed: 33325
+Total instructions executed: 97
 Instruction mix:
-	JMP:	138	(0.41%)
-	JN:	4095	(12.29%)
-	JZ:	4096	(12.29%)
-	LOAD:	4097	(12.29%)
-	STORE:	4237	(12.71%)
-	LOADI:	4234	(12.71%)
-	STOREI:	139	(0.42%)
+	JMP:	3	(3.09%)
+	JN:	9	(9.28%)
+	JZ:	10	(10.31%)
+	LOAD:	11	(11.34%)
+	STORE:	16	(16.49%)
+	LOADI:	13	(13.40%)
+	STOREI:	4	(4.12%)
 	AND:	0	(0.00%)
 	OR:	0	(0.00%)
 	ADD:	0	(0.00%)
-	SUB:	12288	(36.87%)
-	HALT:	1	(0.00%)
+	SUB:	30	(30.93%)
+	HALT:	1	(1.03%)
 
-Cycles: 58317
-Cycles per instruction: 1.75
-Forwards: 12428
-	Cycles without forwarding: 70745
-	CPI without forwarding: 2.12
-Stalls: 16661
-Dumps: 8330
+Cycles: 168
+Cycles per instruction: 1.73
+Forwards: 35
+	Cycles without forwarding: 203
+	CPI without forwarding: 2.09
+Stalls: 47
+Dumps: 23
 	Stage 1 Dumps: 0
-	Stage 2 Dumps: 8330
+	Stage 2 Dumps: 23
 	Stage 3 Dumps: 0
 	Stage 4 Dumps: 0
-Average pipeline fill: 60.72%
-	Average Stage 1 Fill: 71.43%
-	Average Stage 2 Fill: 57.15%
-	Average Stage 3 Fill: 57.15%
-	Average Stage 4 Fill: 57.15%
-Cycles without pipelining: 166625
+Average pipeline fill: 62.05%
+	Average Stage 1 Fill: 72.62%
+	Average Stage 2 Fill: 58.93%
+	Average Stage 3 Fill: 58.33%
+	Average Stage 4 Fill: 58.33%
+Cycles without pipelining: 485
 CPI without pipelining: 5
-Cycles saved from pipelining: 108308
-CPI increase from pipelining: 3.25
+Cycles saved from pipelining: 317
+CPI increase from pipelining: 3.27
 ======================================
+

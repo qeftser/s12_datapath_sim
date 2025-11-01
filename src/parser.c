@@ -69,7 +69,7 @@ void parse_mem_file(char *filename) {
   memory.accumulator = next_12_bits(file);
 
   int line = 0;
-  while (had_error == 0 && line < 255) {
+  while (had_error == 0 && line <= 255) {
     // read line
     skip_addr(file);
     OPCODE o = next_4_bits(file);
